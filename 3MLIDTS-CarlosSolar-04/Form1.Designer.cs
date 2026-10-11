@@ -39,11 +39,11 @@
             this.tbEdad = new System.Windows.Forms.TextBox();
             this.tbEstatura = new System.Windows.Forms.TextBox();
             this.gbGenero = new System.Windows.Forms.GroupBox();
+            this.rbOtro = new System.Windows.Forms.RadioButton();
+            this.rbFemenino = new System.Windows.Forms.RadioButton();
             this.rbMasculino = new System.Windows.Forms.RadioButton();
             this.btnGuardar = new System.Windows.Forms.Button();
             this.btnLimpiar = new System.Windows.Forms.Button();
-            this.rbFemenino = new System.Windows.Forms.RadioButton();
-            this.rbOtro = new System.Windows.Forms.RadioButton();
             this.gbGenero.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -145,6 +145,28 @@
             this.gbGenero.TabStop = false;
             this.gbGenero.Text = "Genero";
             // 
+            // rbOtro
+            // 
+            this.rbOtro.AutoSize = true;
+            this.rbOtro.Location = new System.Drawing.Point(300, 61);
+            this.rbOtro.Name = "rbOtro";
+            this.rbOtro.Size = new System.Drawing.Size(57, 20);
+            this.rbOtro.TabIndex = 2;
+            this.rbOtro.TabStop = true;
+            this.rbOtro.Text = "Otro";
+            this.rbOtro.UseVisualStyleBackColor = true;
+            // 
+            // rbFemenino
+            // 
+            this.rbFemenino.AutoSize = true;
+            this.rbFemenino.Location = new System.Drawing.Point(159, 61);
+            this.rbFemenino.Name = "rbFemenino";
+            this.rbFemenino.Size = new System.Drawing.Size(96, 20);
+            this.rbFemenino.TabIndex = 1;
+            this.rbFemenino.TabStop = true;
+            this.rbFemenino.Text = "Femenino";
+            this.rbFemenino.UseVisualStyleBackColor = true;
+            // 
             // rbMasculino
             // 
             this.rbMasculino.AutoSize = true;
@@ -176,28 +198,7 @@
             this.btnLimpiar.TabIndex = 12;
             this.btnLimpiar.Text = "Limpiar";
             this.btnLimpiar.UseVisualStyleBackColor = true;
-            // 
-            // rbFemenino
-            // 
-            this.rbFemenino.AutoSize = true;
-            this.rbFemenino.Location = new System.Drawing.Point(159, 61);
-            this.rbFemenino.Name = "rbFemenino";
-            this.rbFemenino.Size = new System.Drawing.Size(96, 20);
-            this.rbFemenino.TabIndex = 1;
-            this.rbFemenino.TabStop = true;
-            this.rbFemenino.Text = "Femenino";
-            this.rbFemenino.UseVisualStyleBackColor = true;
-            // 
-            // rbOtro
-            // 
-            this.rbOtro.AutoSize = true;
-            this.rbOtro.Location = new System.Drawing.Point(300, 61);
-            this.rbOtro.Name = "rbOtro";
-            this.rbOtro.Size = new System.Drawing.Size(57, 20);
-            this.rbOtro.TabIndex = 2;
-            this.rbOtro.TabStop = true;
-            this.rbOtro.Text = "Otro";
-            this.rbOtro.UseVisualStyleBackColor = true;
+            this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
             // 
             // Form1
             // 
