@@ -12,16 +12,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace _3MLIDTS_CarlosSolar_04
 {
     public partial class Form1 : Form
     {
+        // CAMBIO: la base de datos se llama formulario04 (sin guion)
+        string conexionSQL = "Server=localhost;Port=3306;Database=formulario04;Uid=root;Pwd=46178661;";
+
         public Form1()
         {
             InitializeComponent();
 
-            // Manejadores de eventos para validar mientras se escribe
             tbNombre.TextChanged += ValidarNombre;
             tbApellido.TextChanged += ValidarApellido;
             tbEdad.TextChanged += ValidarEdad;
@@ -29,10 +32,33 @@ namespace _3MLIDTS_CarlosSolar_04
             tbTelefono.Leave += ValidarTelefono;
         }
 
-        // ---------- Funciones de validación (retornan true/false) ----------
+        private void InsertarRegistros(string Nombre, string Apellido, int Edad, decimal Estatura, string Telefono, string Genero)
+        {
+            using (MySqlConnection conection = new MySqlConnection(conexionSQL))
+            {
+                conection.Open();
+
+                // CAMBIO: espacio antes de VALUES
+                string insertQuery = "INSERT INTO registros (Nombre, Apellido, Edad, Estatura, Telefono, Genero) " +
+                                     "VALUES (@Nombre, @Apellido, @Edad, @Estatura, @Telefono, @Genero)";
+
+                using (MySqlCommand command = new MySqlCommand(insertQuery, conection))
+                {
+                    command.Parameters.AddWithValue("@Nombre", Nombre);
+                    command.Parameters.AddWithValue("@Apellido", Apellido);
+                    command.Parameters.AddWithValue("@Edad", Edad);
+                    command.Parameters.AddWithValue("@Estatura", Estatura);
+                    command.Parameters.AddWithValue("@Telefono", Telefono);
+                    command.Parameters.AddWithValue("@Genero", Genero);
+
+                    command.ExecuteNonQuery();
+                }
+                conection.Close();
+            }
+        }
+
         private bool EsTextoValido(string valor)
         {
-            // letras, acentos, ñ y espacios
             return Regex.IsMatch(valor, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$");
         }
 
@@ -54,11 +80,10 @@ namespace _3MLIDTS_CarlosSolar_04
             return long.TryParse(valor, out resultado) && valor.Length == 10;
         }
 
-        // ---------- Manejadores de eventos ----------
         private void ValidarNombre(object sender, EventArgs e)
         {
             TextBox textBoxLocal = (TextBox)sender;
-            if (textBoxLocal.Text == "") return; // campo vacío: no validar aquí
+            if (textBoxLocal.Text == "") return;
 
             if (!EsTextoValido(textBoxLocal.Text))
             {
@@ -120,7 +145,6 @@ namespace _3MLIDTS_CarlosSolar_04
             }
         }
 
-        // ---------- Función 1: limpiar ----------
         private void LimpiarCampos()
         {
             tbNombre.Clear();
@@ -128,7 +152,7 @@ namespace _3MLIDTS_CarlosSolar_04
             tbEdad.Clear();
             tbTelefono.Clear();
             tbEstatura.Clear();
-            tbTelefono.BackColor = SystemColors.Window; // quita el verde/rojo
+            tbTelefono.BackColor = SystemColors.Window;
             rbMasculino.Checked = false;
             rbFemenino.Checked = false;
             rbOtro.Checked = false;
@@ -139,7 +163,6 @@ namespace _3MLIDTS_CarlosSolar_04
             LimpiarCampos();
         }
 
-        // ---------- Función 2: guardar ----------
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             string Nombre = tbNombre.Text.Trim();
@@ -148,7 +171,6 @@ namespace _3MLIDTS_CarlosSolar_04
             string Telefono = tbTelefono.Text.Trim();
             string Estatura = tbEstatura.Text.Trim();
 
-            // Campos vacíos
             if (string.IsNullOrWhiteSpace(Nombre) || string.IsNullOrWhiteSpace(Apellido) ||
                 string.IsNullOrWhiteSpace(Edad) || string.IsNullOrWhiteSpace(Telefono) ||
                 string.IsNullOrWhiteSpace(Estatura))
@@ -157,7 +179,6 @@ namespace _3MLIDTS_CarlosSolar_04
                 return;
             }
 
-            // Nombre y apellido
             if (!EsTextoValido(Nombre))
             {
                 MessageBox.Show("El nombre solo puede contener letras.", "Error Nombre", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -170,28 +191,24 @@ namespace _3MLIDTS_CarlosSolar_04
                 return;
             }
 
-            // Edad
             if (!int.TryParse(Edad, out int edadNum) || edadNum <= 0)
             {
                 MessageBox.Show("La edad debe ser un número entero mayor a 0.", "Error Edad", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Estatura
             if (!decimal.TryParse(Estatura, out decimal estaturaNum) || estaturaNum <= 0)
             {
                 MessageBox.Show("La estatura debe ser un número mayor a 0.", "Error Estatura", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Teléfono
             if (!TelefonoValido(Telefono))
             {
                 MessageBox.Show("El teléfono debe tener exactamente 10 dígitos.", "Error Teléfono", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            // Género
             string Genero = "";
             if (rbMasculino.Checked)
             {
@@ -211,6 +228,18 @@ namespace _3MLIDTS_CarlosSolar_04
                 return;
             }
 
+            // NUEVO: guardar en la base de datos (si falla, avisa y no sigue)
+            try
+            {
+                InsertarRegistros(Nombre, Apellido, edadNum, estaturaNum, Telefono, Genero);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo guardar en la base de datos:\n" + ex.Message,
+                                "Error de base de datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             string FechaHora = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
             string Mensaje =
@@ -218,7 +247,7 @@ namespace _3MLIDTS_CarlosSolar_04
 
             // Ruta de almacenamiento del TXT
             string rutaFile = "C:\\Users\\carlo\\CarlosxCarlos\\datos.txt";
-            Directory.CreateDirectory(Path.GetDirectoryName(rutaFile)); // crea la carpeta si no existe
+            Directory.CreateDirectory(Path.GetDirectoryName(rutaFile));
             bool ArchivoExiste = File.Exists(rutaFile);
 
             using (StreamWriter Escritor = new StreamWriter(rutaFile, true))
@@ -230,7 +259,8 @@ namespace _3MLIDTS_CarlosSolar_04
                 Escritor.WriteLine(Mensaje);
             }
 
-            MessageBox.Show(Mensaje, "Registro guardado exitosamente", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // CAMBIO: el título ahora indica que también se guardó en la base de datos
+            MessageBox.Show(Mensaje, "Registro guardado en la base de datos", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             LimpiarCampos();
         }

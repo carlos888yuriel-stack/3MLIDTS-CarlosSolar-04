@@ -219,7 +219,7 @@
             this.Controls.Add(this.lbApellido);
             this.Controls.Add(this.lbNombre);
             this.Name = "Form1";
-            this.Text = "Actividad 04 - Formulario de Registros Vr. 0001";
+            this.Text = "Actividad 08 - Formulario de Registros Vr. 0003";
             this.gbGenero.ResumeLayout(false);
             this.gbGenero.PerformLayout();
             this.ResumeLayout(false);
